@@ -1,118 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProjectCard from '../Components/ProjectCard/ProjectCard';
-import { uploadFile } from '../Services/Api/api';
-
-const projectData = [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 1',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 2',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 3',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 4,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 4',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 5,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 5',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 6,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 6',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 7,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 7',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 8,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 8',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 9,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 9',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 10,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 10',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 11,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 11',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-    {
-        id: 12,
-        image: 'https://images.unsplash.com/photo-1541363111435-5c1b7d867904?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Your Amazing Project 12',
-        dev: 'Sandeela Shameen',
-        description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae vitae, corrupti eligendi ut odit impedit obcaecati fuga consequatur soluta sint nihil. Ducimus qui pariatur nulla corrupti ut ullam libero dignissimos ipsam expedita. Porro ipsum doloribus aut asperiores accusamus laborum, consectetur voluptatum possimus provident cum doloremque exercitationem ipsam nemo unde maiores dolores temporibus libero reiciendis repudiandae. Molestiae eum assumenda quia molestias deserunt? Suscipit cupiditate, provident vero ex nisi odio nostrum qui vel eaque placeat inventore officiis, aspernatur blanditiis fugit magnam, quae beatae corporis necessitatibus dolore maiores aliquam ut! Molestiae, doloribus reiciendis commodi ut beatae sit, quaerat harum quae cupiditate dolor nisi?',
-        url: 'https://google.com'
-    },
-];
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+    const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(false)
+    const [currentUser, setCurrentUser] = useState(null);
     const [formData, setFormData] = useState({
         projectName: '',
-        projectImage: null,
+        projectImageURL: '', // Change to projectImageURL
         projectDescription: '',
         projectUrl: '',
         developerName: '',
     });
 
     const [formErrors, setFormErrors] = useState({});
+    const [projectData, setProjectData] = useState([]);
 
+    const addProject = async (newProject) => {
+        try {
+            // Get the authentication token from your authentication logic
+            const authToken = localStorage.getItem('authToken');
+
+            // Make a POST request to add a new project with the authentication token
+            await axios.post('http://localhost:5000/api/addProject', newProject, {
+                headers: {
+                    Authorization: authToken,
+                },
+            });
+
+            // Fetch all projects after adding a new one
+            fetchProjects();
+        } catch (error) {
+            console.error('Error adding project:', error.message);
+            // Handle error adding project
+        }
+    };
+
+    const fetchProjects = async () => {
+        try {
+            // Make a GET request to fetch all projects
+            const response = await axios.get('http://localhost:5000/api/getAllProjects');
+            // Update the state with the fetched projects
+            setProjectData(response.data);
+        } catch (error) {
+            console.error('Error fetching projects:', error.message);
+            // Handle error fetching projects
+        }
+    };
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
 
@@ -128,9 +64,9 @@ function Home() {
         });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-    
+
         // Basic form validation
         const errors = {};
         if (!formData.projectName.trim()) {
@@ -139,22 +75,29 @@ function Home() {
         if (!formData.developerName.trim()) {
             errors.developerName = 'Developer name is required';
         }
-    
+
         if (Object.keys(errors).length > 0) {
             // Set validation errors and prevent form submission
             setFormErrors(errors);
             return;
         }
-    
+
         try {
-            // Use the uploadFile function to handle the form submission
-            await uploadFile(formData);
-    
+            // Add the new project to the projectData array
+            addProject({
+                id: projectData.length + 1,
+                image: formData.projectImageURL, // Change to projectImageURL
+                title: formData.projectName,
+                developerName: formData.developerName,
+                description: formData.projectDescription,
+                url: formData.projectUrl,
+            });
+
             console.log('Form submitted with data:', formData);
             // Reset form data and errors after submission (optional)
             setFormData({
                 projectName: '',
-                projectImage: null,
+                projectImageURL: '', // Change to projectImageURL
                 projectDescription: '',
                 projectUrl: '',
                 developerName: '',
@@ -167,6 +110,50 @@ function Home() {
         }
     };
 
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const authToken = localStorage.getItem('authToken');
+
+                const response = await axios.get('http://localhost:5000/api/currentUser', {
+                    headers: {
+                        Authorization: authToken,
+                    },
+                });
+
+                // Set the currentUser state with the user data
+                setCurrentUser(response.data);
+            } catch (error) {
+                console.error('Error fetching current user:', error.message);
+                // Handle error fetching current user
+            }
+        };
+
+        fetchCurrentUser();
+    }, []);
+
+
+    const handleLogout = async () => {
+        try {
+            // Make a POST request to the logout endpoint
+            await axios.post('http://localhost:5000/api/logout');
+
+            // Remove the authentication token from localStorage
+            localStorage.removeItem('authToken');
+
+            // Perform any client-side logout logic, e.g., redirect to login page
+            navigate('/');
+            // Example: history.push('/login');
+
+        } catch (error) {
+            console.error('Error during logout:', error.message);
+            // Handle logout error, e.g., display a message to the user
+        }
+    };
+    useEffect(() => {
+        // Fetch all projects when the component mounts
+        fetchProjects();
+    }, []);
     return (
         <>
             <section className='projectSec'>
@@ -177,22 +164,27 @@ function Home() {
                                 Project Sharing Application
                             </h1>
                             <div className="headerBar">
-                                <h2 className="secHeading">
-                                    Welcome, Sandeela Shameen
-                                </h2>
+                                {currentUser && (
+                                    <h2 className="secHeading">
+                                        Welcome, {currentUser.firstName} {currentUser.lastName}
+                                    </h2>
+                                )}
                                 <button onClick={() => setIsVisible(!isVisible)} className='themeBtn'>
                                     Add Project
+                                </button>
+                                <button onClick={handleLogout} className='themeBtn'>
+                                    Logout
                                 </button>
                             </div>
                         </div>
                         {projectData.map((project, index) => (
                             <div className="col-md-4" key={index}>
                                 <ProjectCard
-                                    image={project.image}
-                                    title={project.title}
-                                    dev={project.dev}
-                                    description={project.description}
-                                    url={project.url}
+                                    image={project.image} // Update to project.projectImageURL
+                                    title={project.title} // Update to project.projectName
+                                    dev={project.developerName}
+                                    description={project.description} // Update to project.projectDescription
+                                    url={project.url} // Update to project.projectUrl
                                 />
                             </div>
                         ))}
@@ -222,11 +214,13 @@ function Home() {
                                 {formErrors.projectName && <span className="error">{formErrors.projectName}</span>}
                             </div>
                             <div className="inputCont">
-                                <label htmlFor="projectImage">Upload Project Image</label>
+                                <label htmlFor="projectImage">Upload Project Image URL</label>
                                 <input
-                                    type="file"
-                                    id="projectImage"
-                                    onChange={handleImageUpload}
+                                    type="text"
+                                    id="projectImageURL"
+                                    placeholder="Project Image URL"
+                                    value={formData.projectImageURL}
+                                    onChange={(e) => setFormData({ ...formData, projectImageURL: e.target.value })}
                                 />
                             </div>
                             <div className="inputCont">

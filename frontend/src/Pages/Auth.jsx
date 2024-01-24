@@ -19,6 +19,7 @@ function Auth() {
 
     const [loginErrors, setLoginErrors] = useState({});
     const [signupErrors, setSignupErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const isEmailValid = (email) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -42,18 +43,30 @@ function Auth() {
         if (!isPasswordValid(loginData.password)) {
             errors.password = 'Password should be at least 6 characters';
         }
-        const API_URL = 'http://localhost:3000';
+
         if (Object.keys(errors).length === 0) {
             try {
-                // Make API request for login
-                const response = await axios.post(`${API_URL}/api/v1/login`, loginData);
-                console.log(response.data); // Log the response from the server
+                setLoading(true);
+                const response = await axios.post('http://localhost:5000/api/login', loginData);
 
-                // Redirect to home on successful login
-                navigate('/home');
+                if (response && response.data && response.data.authToken) {
+                    // Store the token securely, e.g., using HTTP-only cookies
+                    const authToken = response.data.authToken;
+
+                    // Store the token in your preferred way (e.g., in local storage or a state variable)
+                    // For example, using localStorage:
+                    localStorage.setItem('authToken', authToken);
+                    // Display a success message or redirect to home
+                    navigate('/home');
+                } else {
+                    console.error('Unexpected response format:', response);
+                }
             } catch (error) {
-                console.error('Error during login:', error.message);
-                // Handle login error, e.g., display a message to the user
+                const errorMessage = error.response?.data?.error || 'Unknown error';
+                alert(errorMessage); // Display the error to the user
+                console.error('Error during login:', errorMessage);
+            } finally {
+                setLoading(false);
             }
         } else {
             setLoginErrors(errors);
@@ -76,20 +89,29 @@ function Auth() {
 
         if (Object.keys(errors).length === 0) {
             try {
-                // Make API request for signup
-                const response = await axios.post('/api/v1/signup', signupData);
-                console.log(response.data); // Log the response from the server
+                setLoading(true);
+                // Make a POST request to the signup endpoint
+                const response = await axios.post('http://localhost:5000/api/signup', signupData);
 
-                // Redirect to home on successful signup
-                navigate('/home');
+                // Check if the response has a 'data' property before accessing it
+                if (response && response.data) {
+                    // Redirect to home on successful signup
+                    navigate('/home');
+                } else {
+                    console.error('Unexpected response format:', response);
+                }
             } catch (error) {
-                console.error('Error during signup:', error.message);
-                // Handle signup error, e.g., display a message to the user
+                const errorMessage = error.response?.data?.error || 'Unknown error';
+                alert(errorMessage); // Display the error to the user
+                console.error('Error during signup:', errorMessage);
+            } finally {
+                setLoading(false);
             }
         } else {
             setSignupErrors(errors);
         }
     };
+
 
     return (
         <section className='loginSec'>
@@ -118,8 +140,8 @@ function Auth() {
                                 />
                                 {loginErrors.password && <span className="error text-white">{loginErrors.password}</span>}
                             </div>
-                            <button type="submit" className="themeBtn">
-                                Login
+                            <button type="submit" className="themeBtn" disabled={loading}>
+                                {loading ? 'Logging in...' : 'Login'}
                             </button>
                         </form>
                     </div>
@@ -171,8 +193,8 @@ function Auth() {
                                 />
                                 {signupErrors.password && <span className="error text-white">{signupErrors.password}</span>}
                             </div>
-                            <button type="submit" className="themeBtn">
-                                Register
+                            <button type="submit" className="themeBtn" disabled={loading}>
+                                {loading ? 'Signing up...' : 'Register'}
                             </button>
                         </form>
                     </div>

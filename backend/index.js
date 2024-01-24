@@ -1,181 +1,172 @@
-const express = require('express')
-const PORT = 8080
-const app = express()
-const path = require('path')
+const express = require('express');
 const mongoose = require('mongoose');
-const cors = require("cors");
-const User = require('./userSchema');
-const postModel = require("./titleSchema");
-const bcrypt = require('bcryptjs');
-mongoose.connect('mongodb+srv://admin:admin@sandeela.qpbwdqa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
+const app = express();
+const PORT = process.env.PORT || 5000;
 
+app.use(cors());
+app.use(bodyParser.json());
 
-app.use(cors(["localhost:5000", "localhost:3000"]))
-app.use(express.json())
-app.use('/', express.static(path.join(__dirname, 'web/build')))
-app.use('/signup', express.static(path.join(__dirname, 'web/build')))
-app.use('/dashboard', express.static(path.join(__dirname, 'web/build')))
+// Define your secret key (you can use environment variables for better security)
+const secretKey = '2hP#G8Z!mY@v$uQ9'; // Replace with your actual secret key
 
+// MongoDB connection
+mongoose.connect('mongodb+srv://admin:admin@sandeela.qpbwdqa.mongodb.net/?retryWrites=true&w=majority', {
 
-app.get("/", (req, res, next) => {
-    // res.sendFile(path.join(__dirname, "./web/build/index.html"))
-    res.redirect("/")
-})
-app.post('/api/v1/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
+});
 
-        if (!email || !password) {
-            // console.log("required field missing");
-            return res.status(403).json("required field missing");
-        }
+// MongoDB User Schema
+const UserSchema = new mongoose.Schema({
+    firstName: String,
+    lastName: String,
+    email: { type: String, unique: true },
+    password: String,
+});
 
-        // console.log("req.body: ", req.body);
-        const userLogin = await User.findOne({ email: email });
+const User = mongoose.model('User', UserSchema);
 
-        if (userLogin) {
-            const isMatch = await bcrypt.compare(password, userLogin.password)
-            if (!isMatch) {
-                res.status(400).json({ error: "Invalid Credientials" })
+// MongoDB Project Schema
+const ProjectSchema = new mongoose.Schema({
+    title: String,
+    image: String,
+    description: String,
+    url: String,
+    developerName: String,
+});
 
-            } else {
-                res.json({ message: 'user login successfully' })
-            }
-        } else {
-            res.status(400).json({ error: "Invalid Credientials" })
-        }
+const Project = mongoose.model('Project', ProjectSchema);
 
+// Middleware to authenticate JWT token
+const authenticateToken = (req, res, next) => {
+    const token = req.header('Authorization');
 
-    } catch (err) {
-        console.log(err);
+    if (!token) {
+        return res.status(401).json({ error: 'Access denied - no token provided' });
     }
 
-})
-app.post('/api/v1/signup', async (req, res) => {
-    try {
-        const { name, address, email, password } = req.body;
-
-        if (!email ||
-            !password ||
-            !name || !address) {
-            console.log("required field missing");
-            return res.status(403).json({ error: "required field missing" });
-        }
-
-        const userExit = await User.findOne({ email: email });
-        if (userExit) {
-            return res.status(420).json({ error: "Email Already exists" });
-        }
-
-        const user = new User({ name, address, email, password })
-
-        // await user.save();
-        await user.save(() => {
-            console.log("data saved")
-            // res.send('profile created')
-        })
-        res.status(201).json({ message: "user registered successfully" });
-
-
-    } catch (err) {
-        console.log(err);
-    }
-
-})
-
-app.post('/api/v1/profile', (req, res) => {
-    const email = req.body.email;
-    User.find({ email: email }, (err, data) => {
+    jwt.verify(token, secretKey, (err, user) => {
         if (err) {
-            res.send('status 500, error in getting data base')
+            console.error('Error verifying token:', err.message);
+            return res.status(403).json({ error: 'Invalid token' });
         }
-        else {
-            res.send(data)
+
+        req.user = user;
+        next();
+    });
+};
+
+// Example generateAuthToken function
+const generateAuthToken = (user) => {
+    const { _id, firstName, lastName } = user;
+    const token = jwt.sign({ userId: _id, firstName, lastName }, secretKey, { expiresIn: '1h' });
+    return token;
+};
+
+// Express routes
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
-    })
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        const authToken = generateAuthToken(user);
+
+        res.json({ authToken });
+    } catch (error) {
+        console.error('Error during login:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
+app.post('/api/signup', async (req, res) => {
+    const { firstName, lastName, email, password } = req.body;
 
-app.post("/api/v1/create", (request, response) => {
     try {
-        const body = request.body;
-        postModel.create(body, (error, data) => {
-            if (error) {
-                throw error;
-            } else {
-                console.log(data);
-                response.send(data);
-            }
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already in use' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
         });
+
+        await newUser.save();
+
+        res.json({ message: 'Signup successful' });
     } catch (error) {
-        response.send(`Got an error `, error.message);
+        console.error('Error during signup:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-// app.get("/api/v1/posts", (request, response) => {
-//     try {
-//         const { title } = request.headers;
-//         const query = {};
-//         if (title) {
-//             query.title = title;
-//         }
-//         postModel.find(query, (error, data) => {
-//             if (error) {
-//                 throw error;
-//             } else {
-//                 response.send(JSON.stringify(data));
-//             }
-//         });
-//     } catch (error) {
-//         response.send(`Got an error during get posts `, error.message);
-//     }
-// });
-app.delete('/api/v1/profile', (req, res) => {
-    res.send('profile deleted')
-})
-app.put('/api/v1/profile', (req, res) => {
-    res.send('profile updated')
-})
-
-router.post('/add_project', async (req, res) => {
+app.get('/api/currentUser', authenticateToken, async (req, res) => {
     try {
-        const newProjects = new Projects({
+        const currentUser = req.user;
+        res.json(currentUser);
+    } catch (error) {
+        console.error('Error fetching current user:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
-            Projectname: req.body.Projectname,
-            ProjectImage: req.body.ProjectImage,
-            ProjectDescription: req.body.ProjectDescription,
-            ProjectURL: req.body.ProjectURL,
-            DeveloperName: Strireq.body.DeveloperName,
+app.post('/api/logout', (req, res) => {
+    // Perform any logout logic, if needed
+    res.json({ message: 'Logout successful' });
+});
 
+app.post('/api/addProject', authenticateToken, async (req, res) => {
+    try {
+        const { title, image, description, url, developerName } = req.body;
+
+        const newProject = new Project({
+            title,
+            image,
+            description,
+            url,
+            developerName,
         });
-        await newProjects.save();
-        console.log("Data Saved");
-        res.send('Project created');
+
+        await newProject.save();
+
+        res.json({ message: 'Project added successfully' });
     } catch (error) {
-        console.error("Error saving user:", error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error adding project:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-router.get('/api/v1/project', async (req, res) => {
+
+app.get('/api/getAllProjects', async (req, res) => {
     try {
-        const data = await Projets.find({});
-        res.send(data);
+        const projects = await Project.find();
+        res.json(projects);
     } catch (error) {
-        console.error("Error fetching data:", error);
-        res.status(500).send("Internal Server Error");
-    }
-});
-router.get('/api/v1/project', async (req, res) => {
-    try {
-        const data = await Projets.find({});
-        res.send(data);
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        res.status(500).send("Internal Server Error");
+        console.error('Error fetching projects:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Example app listening at http://localhost:${PORT}`)
-})
+    console.log(`Server is running on port ${PORT}`);
+});
+
