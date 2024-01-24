@@ -1,0 +1,329 @@
+:root {
+  --theme-color: #016DEB;
+  --text-light-color: #9093B1;
+  --text-color: #0B111F;
+  --black: #000000;
+  --white: #ffffff;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: initial !important;
+  overscroll-behavior: none !important;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1440px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 320.98px) {
+  html {
+    font-size: 11px;
+  }
+}
+
+body {
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+  background: var(--body-bg);
+  box-sizing: border-box;
+  overflow-x: clip;
+  font-size: 1.125rem;
+}
+
+a,
+button {
+  text-decoration: none !important;
+  transition: all 0.3s ease-in-out;
+}
+
+a:hover,
+button:hover {
+  transition: all 0.3s ease-in-out;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+figure {
+  margin: 0;
+}
+
+section {
+  padding: 4rem 0;
+}
+
+.secHeading {
+  font-size: 2.25rem;
+  color: var(--text-color);
+  font-weight: 600;
+  line-height: 48px;
+  margin: 0;
+  overflow: hidden;
+}
+
+.subHeading {
+  font-size: 1rem;
+  color: var(--theme-color);
+  font-weight: 500;
+  line-height: 26px;
+  margin: 0;
+}
+
+.subHeading.bold {
+  font-weight: bold;
+}
+
+p {
+  font-size: 1.125rem;
+  color: var(--text-light-color);
+  margin: 0;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.themeBtn {
+  display: inline-block;
+  padding: 1rem 3rem;
+  background: linear-gradient(to right, var(--white), var(--white));
+  background-size: 0 100%;
+  background-position: left;
+  background-repeat: no-repeat;
+  background-color: var(--theme-color);
+  border: 1px solid var(--theme-color);
+  border-radius: 5px;
+  font-size: 1.125rem;
+  transition: all 0.3s ease-in-out;
+  color: var(--white);
+}
+
+.themeBtn:hover {
+  background-size: 100% 100%;
+  color: var(--theme-color);
+}
+
+.loginSec {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(-42deg, #d831d5, #4e38bd, #622ccc, #bd0000);
+  background-size: 400% 400%;
+  animation: bgAnim 8s ease-in-out forwards 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes bgAnim {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.inputCont {
+  width: 100%;
+}
+
+.inputCont .error {
+  color: red;
+  font-weight: bold;
+}
+
+.inputCont input,
+.inputCont textarea {
+  background: transparent;
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  padding-left: 1rem;
+  border: 1px solid #fff;
+  outline: none;
+  box-shadow: none;
+  border-radius: 30px;
+  min-height: 45px;
+  font-size: 1rem;
+  padding-block: 0.5rem;
+}
+
+.inputCont input::placeholder,
+.inputCont textarea::placeholder {
+  color: #fff;
+}
+
+.loginSec .secHeading {
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.projectCard {
+  width: 100%;
+}
+
+.projectCard .imgContainer {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 40px;
+}
+
+.projectCard .imgContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease-in-out;
+}
+
+.projectCard:hover .imgContainer img {
+  transform: scale(1.2);
+}
+
+.projectCard .content h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 1rem 0 0;
+}
+
+.projectCard .content p {
+  font-size: 0.875rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.projectCard .projectCardFooter {
+  border-block: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0 0;
+  gap: 1rem;
+}
+
+.projectCard .projectCardFooter a {
+  font-size: 0.75rem;
+  color: #000;
+}
+
+.projectCard .projectCardFooter h6 {
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.projectSec .row {
+  gap: 1rem 0;
+}
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mainHeading {
+  font-size: 3rem;
+  color: var(--text-color);
+  font-weight: 600;
+  margin: 0 0 2rem;
+  overflow: hidden;
+  border-bottom: 1px solid #000;
+  padding-bottom: 1rem;
+}
+
+.backdrop {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, .35);
+}
+
+.addProject {
+  position: relative;
+  background-color: #fff;
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  border-radius: 30px;
+}
+
+.addProjectForm input,
+.addProjectForm textarea {
+  border-color: #000;
+  min-height: auto;
+  color: #000;
+}
+
+.addProjectForm input::placeholder,
+.addProjectForm textarea::placeholder {
+  color: #000;
+}
+
+.addProjectForm label {
+  text-align: left;
+  display: block;
+  margin: 1rem 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.dismissBtn{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 100%;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  color: #000;
+}
