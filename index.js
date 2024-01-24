@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 const secretKey = '2hP#G8Z!mY@v$uQ9'; // Replace with your actual secret key
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://huzaifa:huzaifa123@cluster0.upwd0ur.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://admin:admin@sandeela.qpbwdqa.mongodb.net/?retryWrites=true&w=majority', {
 
 });
 
